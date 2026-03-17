@@ -11,7 +11,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
+import sys
+sys.path.append(os.path.dirname(__file__))
 from rag_service import RAGService
+
 
 # ── Load environment variables ──
 load_dotenv()
