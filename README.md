@@ -1,23 +1,57 @@
-Luminara — AI Document Research Analyst
-
-Upload any document. Ask anything. Get precise, sourced answers instantly.
-
-Luminara is a full-stack RAG (Retrieval Augmented Generation) application that lets you upload PDFs, TXT, or CSV files and ask natural language questions about them. Powered by LLaMA 3.3 70B via Groq and ChromaDB for vector search.
-
-Demo
-User: What are the key findings in this report?
-Luminara: Based on your document, the key findings are...
-
-Tech Stack
-LayerTechnologyFrontendReact + Vite + Tailwind CSSBackendFastAPI + PythonLLMLLaMA 3.3 70B via Groq APIEmbeddingsSentence Transformers (all-MiniLM-L6-v2)Vector DBChromaDBDocument ParsingLangChain (PyPDFLoader, TextLoader, CSVLoader)
-
-Project Structure
+# ✨ Luminara — AI Document Research Analyst
+ 
+<div align="center">
+ 
+![Luminara Banner](https://img.shields.io/badge/Luminara-AI%20Research%20Analyst-6366f1?style=for-the-badge&logo=sparkles&logoColor=white)
+ 
+**Upload any document. Ask anything. Get precise answers instantly.**
+ 
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![Groq](https://img.shields.io/badge/Groq-LLaMA%203.3%2070B-f97316?style=flat-square)](https://groq.com)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Store-8b5cf6?style=flat-square)](https://www.trychroma.com)
+[![Railway](https://img.shields.io/badge/Deploy-Railway-0f172a?style=flat-square&logo=railway&logoColor=white)](https://railway.app)
+ 
+</div>
+ 
+---
+ 
+## 🧠 What is Luminara?
+ 
+Luminara is a full-stack **RAG (Retrieval Augmented Generation)** application. Upload your PDFs, TXT, or CSV files and ask natural language questions — Luminara retrieves the most relevant context from your documents and generates precise, structured answers using **LLaMA 3.3 70B**.
+ 
+```
+User     →  "What are the key findings in this report?"
+Luminara →  "Based on your document, the key findings are..."
+```
+ 
+---
+ 
+## 🛠️ Tech Stack
+ 
+| Layer | Technology |
+|---|---|
+| 🎨 Frontend | React + Vite + Tailwind CSS |
+| ⚙️ Backend | FastAPI + Python |
+| 🤖 LLM | LLaMA 3.3 70B via Groq API |
+| 🔢 Embeddings | Sentence Transformers (all-MiniLM-L6-v2) |
+| 🗄️ Vector DB | ChromaDB |
+| 📄 Doc Parsing | LangChain (PyPDFLoader, TextLoader, CSVLoader) |
+ 
+---
+ 
+## 📁 Project Structure
+ 
+```
 luminara/
 ├── backend/
-│   ├── main.py              # FastAPI app + endpoints
-│   ├── rag_service.py       # RAG pipeline logic
+│   ├── main.py              # FastAPI app + all endpoints
+│   ├── rag_service.py       # Core RAG pipeline logic
 │   ├── requirements.txt     # Python dependencies
-│   └── .env                 # API keys (never commit this)
+│   ├── Dockerfile           # For Railway deployment
+│   ├── railway.json         # Railway config
+│   └── .env                 # API keys (never commit this!)
+│
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # React components
@@ -25,74 +59,121 @@ luminara/
 │   │   └── main.jsx
 │   ├── package.json
 │   └── vite.config.js
+│
 ├── data/                    # Uploaded documents (auto-created)
 ├── chroma_db/               # Vector store (auto-created)
+├── .gitignore
 └── README.md
-
-Getting Started
-Prerequisites
-
-Python 3.10+
-Node.js 18+
-Groq API key — free at https://console.groq.com
-
-
-1. Clone the repository
-bashgit clone https://github.com/DevangPandit/luminara-research-assistant.git
+```
+ 
+---
+ 
+## 🚀 Getting Started
+ 
+### Prerequisites
+ 
+- Python 3.10+
+- Node.js 18+
+- Groq API key — free at [console.groq.com](https://console.groq.com)
+ 
+---
+ 
+### 1️⃣ Clone the Repository
+ 
+```bash
+git clone https://github.com/DevangPandit/luminara-research-assistant.git
 cd luminara-research-assistant
-
-2. Backend Setup
-bashcd backend
-
-# Create and activate virtual environment
+```
+ 
+---
+ 
+### 2️⃣ Backend Setup
+ 
+```bash
+cd backend
+ 
+# Create virtual environment
 python -m venv venv
-
-# Windows
+ 
+# Activate — Windows
 venv\Scripts\activate.bat
-
-# Mac/Linux
+ 
+# Activate — Mac/Linux
 source venv/bin/activate
-
+ 
 # Install dependencies
 pip install -r requirements.txt
-Create a .env file inside the backend/ folder:
-envGROQ_API_KEY=your_groq_api_key_here
-Start the backend:
+```
+ 
+Create a `.env` file inside `backend/`:
+ 
+```env
+GROQ_API_KEY=your_groq_api_key_here
+```
+ 
+Start the backend server:
+ 
+```bash
 uvicorn main:app --reload
-Backend runs at: http://localhost:8000
-API docs at: http://localhost:8000/docs
-
-3. Frontend Setup
+```
+ 
+> Backend runs at `http://localhost:8000`
+> Auto API docs at `http://localhost:8000/docs`
+ 
+---
+ 
+### 3️⃣ Frontend Setup
+ 
+```bash
 cd frontend
-
 npm install
-
 npm run dev
-Frontend runs at: http://localhost:5173 or http://localhost:5174
-
-4. Using the App
-
-Open http://localhost:5173
-Upload a PDF, TXT, or CSV file
-Wait for the embedding to complete (a few seconds)
-Ask any question about your document
-Get a detailed, structured answer powered by LLaMA 3.3
-
-
-API Endpoints
-MethodEndpointDescriptionPOST/uploadUpload a document for embeddingGET/status/{filename}Check embedding statusPOST/chatAsk a question about uploaded docsGET/historyGet chat historyGET/healthHealth check
-Example Request
-bash# Upload a document
+```
+ 
+> Frontend runs at `http://localhost:5173`
+ 
+---
+ 
+### 4️⃣ Using the App
+ 
+1. Open `http://localhost:5173` in your browser
+2. Upload a **PDF**, **TXT**, or **CSV** file
+3. Wait a few seconds for embedding to complete
+4. Ask any question about your document
+5. Get a detailed answer powered by LLaMA 3.3 ✨
+ 
+---
+ 
+## 📡 API Endpoints
+ 
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/upload` | Upload a document for embedding |
+| `GET` | `/status/{filename}` | Check embedding status |
+| `POST` | `/chat` | Ask a question about uploaded docs |
+| `GET` | `/history` | Retrieve chat history |
+| `GET` | `/health` | Health check |
+ 
+### Example Usage
+ 
+```bash
+# Upload a document
 curl -X POST http://localhost:8000/upload \
   -F "file=@your_document.pdf"
-
+ 
 # Ask a question
 curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
   -d '{"query": "What is the main topic of this document?"}'
-
-Requirements
-backend/requirements.txt
+```
+ 
+---
+ 
+## 📦 Requirements
+ 
+`backend/requirements.txt`
+ 
+```
 fastapi
 uvicorn
 python-dotenv
@@ -105,28 +186,43 @@ chromadb
 pypdf
 sentence-transformers
 aiofiles
-
-Environment Variables
-VariableDescriptionRequiredGROQ_API_KEYYour Groq API keyYes
-
-Deploying to Railway (Backend)
-Railway is a cloud platform that hosts your FastAPI backend for free.
-Step 1: Prepare your backend for deployment
-Create a Dockerfile inside your backend/ folder:
-dockerfileFROM python:3.11-slim
-
+```
+ 
+---
+ 
+## 🔐 Environment Variables
+ 
+| Variable | Description | Required |
+|---|---|---|
+| `GROQ_API_KEY` | Your Groq API key from console.groq.com | ✅ Yes |
+ 
+---
+ 
+## ☁️ Deployment
+ 
+### Backend → Railway
+ 
+#### Step 1: Create `Dockerfile` in `backend/`
+ 
+```dockerfile
+FROM python:3.11-slim
+ 
 WORKDIR /app
-
+ 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
+ 
 COPY . .
-
+ 
 EXPOSE 8000
-
+ 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-Create a railway.json in your backend/ folder:
-json{
+```
+ 
+#### Step 2: Create `railway.json` in `backend/`
+ 
+```json
+{
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "./Dockerfile"
@@ -136,19 +232,11 @@ json{
     "restartPolicyType": "always"
   }
 }
-
-Step 2: Push to GitHub
-Make sure your project is on GitHub. From your project root:
-bashgit init
-git add .
-git commit -m "initial commit"
-git branch -M main
-git remote add origin https://github.com/yourusername/luminara.git
-git push -u origin main
-
-Important: Add a .gitignore file to avoid pushing sensitive files:
-
-gitignore# .gitignore
+```
+ 
+#### Step 3: Add `.gitignore` to project root
+ 
+```gitignore
 .env
 venv/
 __pycache__/
@@ -157,87 +245,112 @@ data/
 *.pyc
 node_modules/
 dist/
-
-Step 3: Deploy on Railway
-
-Go to https://railway.com and sign up with GitHub
-Click "New Project"
-Click "Deploy from GitHub repo"
-Select your luminara repository
-Railway will auto-detect the Dockerfile and start building
-
-
-Step 4: Set Environment Variables on Railway
-
-Click on your deployed service
-Go to the "Variables" tab
-Click "Add Variable"
-Add: GROQ_API_KEY = your Groq API key
-Railway will automatically redeploy
-
-
-Step 5: Generate a Public URL
-
-Go to your service "Settings" tab
-Scroll to "Networking" section
-Click "Generate Domain"
-You'll get a URL like: https://luminara-backend.up.railway.app
-
-
-Step 6: Update Frontend to use Railway URL
-In your frontend, update the API base URL from localhost:8000 to your Railway URL:
-javascript// src/api.js or wherever you set the base URL
+```
+ 
+#### Step 4: Push to GitHub
+ 
+```bash
+git init
+git add .
+git commit -m "initial commit"
+git branch -M main
+git remote add origin https://github.com/yourusername/luminara.git
+git push -u origin main
+```
+ 
+#### Step 5: Deploy on Railway
+ 
+1. Go to [railway.com](https://railway.com) and sign in with GitHub
+2. Click **"New Project"** → **"Deploy from GitHub repo"**
+3. Select your `luminara` repository
+4. Railway auto-detects the Dockerfile and starts building ✅
+ 
+#### Step 6: Add Environment Variable
+ 
+1. Click your deployed service → **"Variables"** tab
+2. Add `GROQ_API_KEY` = your Groq API key
+3. Railway auto-redeploys ✅
+ 
+#### Step 7: Generate Public URL
+ 
+1. Go to **"Settings"** → **"Networking"**
+2. Click **"Generate Domain"**
+3. You'll get a URL like:
+ 
+```
+https://luminara-backend.up.railway.app
+```
+ 
+---
+ 
+### Frontend → Vercel
+ 
+#### Step 1: Add `.env` in `frontend/`
+ 
+```env
+VITE_API_URL=https://luminara-backend.up.railway.app
+```
+ 
+#### Step 2: Update API base URL in your frontend code
+ 
+```javascript
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
-Create a .env file in your frontend/ folder:
-envVITE_API_URL=https://luminara-backend.up.railway.app
-
-Deploying Frontend to Vercel
-
-Go to https://vercel.com and sign in with GitHub
-Click "New Project"
-Import your luminara repository
-Set Root Directory to frontend
-Add environment variable: VITE_API_URL = your Railway backend URL
-Click Deploy
-
-Your app will be live at: https://luminara.vercel.app
-
-How It Works
-User uploads PDF
-      ↓
-Backend saves file to disk
-      ↓
-Background thread chunks the document
-      ↓
-Each chunk is converted to an embedding vector
-      ↓
-Vectors stored in ChromaDB
-      ↓
-User asks a question
-      ↓
-Question converted to embedding
-      ↓
-ChromaDB finds most similar chunks (MMR search)
-      ↓
-Chunks + question sent to LLaMA 3.3 via Groq
-      ↓
-LLaMA generates a detailed answer
-      ↓
-Answer returned to user
-
-Features
-
-Upload PDF, TXT, and CSV files
-Background embedding — no waiting on upload
-MMR retrieval — diverse, non-redundant context chunks
-Markdown formatted answers with headings and bullet points
-Chat history stored per session
-CORS configured for local and production
-Health check endpoint for Railway monitoring
-
-
-Built By
-Devang — Built with LLaMA 3.3 · Powered by Groq · RAG Architecture
-
-License
+```
+ 
+#### Step 3: Deploy on Vercel
+ 
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
+2. Click **"New Project"** → import your `luminara` repo
+3. Set **Root Directory** to `frontend`
+4. Add env variable: `VITE_API_URL` = your Railway backend URL
+5. Click **Deploy** 🚀
+ 
+> Your app will be live at `https://luminara.vercel.app`
+ 
+---
+ 
+## ⚙️ How It Works
+ 
+```
+📄 User uploads PDF
+        ↓
+💾 Backend saves file to disk
+        ↓
+✂️  Background thread chunks the document
+        ↓
+🔢 Each chunk → embedding vector
+        ↓
+🗄️  Vectors stored in ChromaDB
+        ↓
+❓ User asks a question
+        ↓
+🔍 ChromaDB finds most relevant chunks (MMR search)
+        ↓
+🤖 Chunks + question → LLaMA 3.3 via Groq
+        ↓
+✨ Structured answer returned to user
+```
+ 
+---
+ 
+## ✅ Features
+ 
+- 📁 Upload **PDF**, **TXT**, and **CSV** files
+- ⚡ Background embedding — upload returns instantly
+- 🔍 **MMR retrieval** — diverse, non-redundant context
+- 📝 **Markdown formatted** answers with headings and lists
+- 💬 Chat history stored per session
+- 🌐 CORS configured for local and production
+- 🏥 Health check endpoint for Railway monitoring
+ 
+---
+ 
+## 👨‍💻 Built By
+ 
+**Devang** &nbsp;·&nbsp; Built with LLaMA 3.3 &nbsp;·&nbsp; Powered by Groq &nbsp;·&nbsp; RAG Architecture
+ 
+---
+ 
+## 📄 License
+ 
 MIT License — free to use, modify, and distribute.
