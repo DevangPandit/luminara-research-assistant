@@ -114,6 +114,7 @@ function App() {
   const [uploadStatus, setUploadStatus] = useState(null);
   const [isUploading, setIsUploading]   = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
@@ -171,8 +172,9 @@ function App() {
   return (
     <div className="app-container">
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="brand">
+          <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="Close menu">×</button>
           <div className="brand-icon"><LogoIcon /></div>
           <div className="brand-text">
             <span className="brand-name">Luminara</span>
@@ -226,10 +228,14 @@ function App() {
             <div className="history-scroll">{userQueries.slice().reverse().map((msg,i)=><div key={i} className="history-item">{msg.text}</div>)}</div>}
         </div>
       </aside>
+      {isSidebarOpen && <div className="overlay" onClick={() => setIsSidebarOpen(false)} aria-hidden="true" />}
 
       {/* Chat */}
       <main className="chat-container">
         <div className="chat-header">
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+            ☰
+          </button>
           <div><div className="chat-title">Chat</div><div className="chat-subtitle">Ask questions about your documents</div></div>
           <div className="status-indicator"><span className="pulse-dot" />Connected</div>
         </div>
