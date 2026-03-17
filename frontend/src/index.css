@@ -984,7 +984,37 @@ body {
     box-shadow: 0 1px 5px rgba(0,0,0,0.08);
   }
 
-  .chat-header { padding-left: 1rem; padding-right: 1rem; }
+  .chat-header {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chat-container {
+    width: 100%;
+    margin-left: 0;
+    height: calc(100vh - 60px);
+    min-height: 0;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .messages-area {
+    padding: 1rem;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .input-area {
+    position: sticky;
+    bottom: 0;
+    z-index: 200;
+    background: var(--surface);
+    padding: 0.75rem 0.9rem;
+  }
 
   .overlay {
     position: fixed;

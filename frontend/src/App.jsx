@@ -119,6 +119,19 @@ function App() {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setIsSidebarOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isSidebarOpen]);
+
   const handleFileChange = (e) => { if (e.target.files?.[0]) { setFile(e.target.files[0]); setUploadStatus(null); } };
   const removeFile = (e) => { e.preventDefault(); setFile(null); setUploadStatus(null); const inp = document.getElementById('file-upload'); if(inp) inp.value=""; };
 
@@ -178,7 +191,6 @@ function App() {
           <div className="brand-icon"><LogoIcon /></div>
           <div className="brand-text">
             <span className="brand-name">Luminara</span>
-            <span className="brand-tagline">Research Assistant</span>
           </div>
         </div>
 
@@ -233,11 +245,13 @@ function App() {
       {/* Chat */}
       <main className="chat-container">
         <div className="chat-header">
+          <div>
+            <div className="chat-title">Luminara Assistant</div>
+            <div className="chat-subtitle">Ask questions about your documents</div>
+          </div>
           <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
             ☰
           </button>
-          <div><div className="chat-title">Chat</div><div className="chat-subtitle">Ask questions about your documents</div></div>
-          <div className="status-indicator"><span className="pulse-dot" />Connected</div>
         </div>
 
         <div className="messages-area">
