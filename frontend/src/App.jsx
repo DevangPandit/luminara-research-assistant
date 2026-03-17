@@ -249,9 +249,10 @@ function App() {
             <div className="chat-title">Luminara Assistant</div>
             <div className="chat-subtitle">Ask questions about your documents</div>
           </div>
-          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
-            ☰
-          </button>
+          <div className="chat-header-actions">
+            <div className="status-indicator desktop-only"><span className="pulse-dot" />Connected</div>
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">☰</button>
+          </div>
         </div>
 
         <div className="messages-area">

@@ -60,6 +60,8 @@ body {
   overflow: hidden;
 }
 
+.mobile-close-btn { display: none; }
+
 /* Brand */
 .brand {
   display: flex;
@@ -450,6 +452,16 @@ body {
   justify-content: space-between;
   flex-shrink: 0;
 }
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mobile-menu-btn { display: none; }
+
+.desktop-only { display: inline-flex; }
 
 .chat-title {
   font-size: 0.95rem;
@@ -984,12 +996,19 @@ body {
     box-shadow: 0 1px 5px rgba(0,0,0,0.08);
   }
 
+  .mobile-menu-btn { display: inline-flex; }
+
+  .mobile-menu-btn { display: inline-flex; }
+
   .chat-header {
     padding-left: 1rem;
     padding-right: 1rem;
     justify-content: space-between;
     align-items: center;
   }
+
+  .status-indicator,
+  .desktop-only { display: none; }
 
   .chat-container {
     width: 100%;
