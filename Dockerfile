@@ -24,7 +24,8 @@ COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
 # Install CPU-only PyTorch first (much smaller than default)
 RUN pip install --no-cache-dir \
-    torch==2.2.0+cpu \
+    "numpy<2" \
+    torch==2.4.0+cpu \
     --index-url https://download.pytorch.org/whl/cpu
 
 # Install remaining dependencies
