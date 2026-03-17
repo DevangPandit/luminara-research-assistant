@@ -3,8 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './index.css';
 
-// Icons
-
+// ── Icons ──
 const LogoIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -62,8 +61,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-// CopyButton component with "Copied" feedback state
-
+// ── CopyButton ──
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
@@ -79,9 +77,7 @@ function CopyButton({ text }) {
   );
 }
 
-// FileStatusBadge component that polls the backend for the embedding status of a file and shows "Embedding…" / "Ready" / "Error"
-
-// Polls /status/{filename} every 2s until it's "ready"
+// ── FileStatusBadge ──
 function FileStatusBadge({ filename, onReady }) {
   const [status, setStatus] = useState('processing');
 
@@ -89,7 +85,7 @@ function FileStatusBadge({ filename, onReady }) {
     if (status === 'ready') return;
     const id = setInterval(async () => {
       try {
-        const res  = await fetch(`http://localhost:8000/status/${encodeURIComponent(filename)}`);
+        const res  = await fetch(`${API_URL}/status/${encodeURIComponent(filename)}`);
         const data = await res.json();
         setStatus(data.status);
         if (data.status === 'ready') {
@@ -101,21 +97,15 @@ function FileStatusBadge({ filename, onReady }) {
     return () => clearInterval(id);
   }, [filename, status, onReady]);
 
-  if (status === 'ready') {
-    return <span className="file-badge ready">Ready</span>;
-  }
-  if (status?.startsWith('error')) {
-    return <span className="file-badge error">Error</span>;
-  }
+  if (status === 'ready') return <span className="file-badge ready">Ready</span>;
+  if (status?.startsWith('error')) return <span className="file-badge error">Error</span>;
   return <span className="file-badge processing">Embedding…</span>;
 }
 
-// API base URL
+// ── API URL ──
+const API_URL = import.meta.env.VITE_API_URL || "";
 
-const API_URL = "http://localhost:8000";
-
-// App component
-
+// ── App ──
 function App() {
   const [messages, setMessages]         = useState([]);
   const [inputValue, setInputValue]     = useState("");
@@ -123,25 +113,13 @@ function App() {
   const [file, setFile]                 = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [isUploading, setIsUploading]   = useState(false);
-  // { name, status: 'processing' | 'ready' }
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const messagesEndRef = useRef(null);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  const handleFileChange = (e) => {
-    if (e.target.files?.[0]) { setFile(e.target.files[0]); setUploadStatus(null); }
-  };
-
-  const removeFile = (e) => {
-    e.preventDefault();
-    setFile(null);
-    setUploadStatus(null);
-    const inp = document.getElementById('file-upload');
-    if (inp) inp.value = "";
-  };
+  const handleFileChange = (e) => { if (e.target.files?.[0]) { setFile(e.target.files[0]); setUploadStatus(null); } };
+  const removeFile = (e) => { e.preventDefault(); setFile(null); setUploadStatus(null); const inp = document.getElementById('file-upload'); if(inp) inp.value=""; };
 
   const handleUpload = async () => {
     if (!file) return;
@@ -150,76 +128,50 @@ function App() {
     const fd = new FormData();
     fd.append("file", file);
     try {
-      const res  = await fetch(`${API_URL}/upload`, { method: "POST", body: fd });
+      const res = await fetch(`${API_URL}/upload`, { method: "POST", body: fd });
       const data = await res.json();
       if (res.ok) {
-        setUploadStatus({
-          type: 'success',
-          message: `"${file.name}" saved. Embedding in background…`,
-        });
-        // Track this file; status starts as 'processing'
+        setUploadStatus({ type: 'success', message: `"${file.name}" saved. Embedding in background…` });
         const name = file.name;
-        setUploadedFiles(prev => [
-          ...prev.filter(f => f.name !== name),
-          { name, status: 'processing' },
-        ]);
+        setUploadedFiles(prev => [...prev.filter(f => f.name!==name), { name, status:'processing' }]);
         setFile(null);
-        const inp = document.getElementById('file-upload');
-        if (inp) inp.value = "";
-      } else {
-        setUploadStatus({ type: 'error', message: data.detail || 'Upload failed.' });
-      }
-    } catch {
-      setUploadStatus({ type: 'error', message: 'Cannot reach backend. Is the server running?' });
-    } finally {
-      setIsUploading(false);
-    }
+        const inp = document.getElementById('file-upload'); if(inp) inp.value="";
+      } else { setUploadStatus({ type: 'error', message: data.detail || 'Upload failed.' }); }
+    } catch { setUploadStatus({ type:'error', message:'Cannot reach backend. Is the server running?' }); }
+    finally { setIsUploading(false); }
   };
 
   const handleFileReady = useCallback((name) => {
-    setUploadedFiles(prev =>
-      prev.map(f => f.name === name ? { ...f, status: 'ready' } : f)
-    );
+    setUploadedFiles(prev => prev.map(f => f.name===name ? { ...f, status:'ready'} : f));
   }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
     const text = inputValue;
-    setMessages(prev => [...prev, { role: 'user', text }]);
+    setMessages(prev => [...prev, { role:'user', text }]);
     setInputValue("");
     setIsLoading(true);
     try {
-      const res  = await fetch(`${API_URL}/chat`, {
+      const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: text }),
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ query:text }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setMessages(prev => [...prev, { role: 'ai', text: data.answer, sources: data.sources || [] }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'ai', text: `**Error:** ${data.detail || 'Something went wrong.'}` }]);
-      }
-    } catch {
-      setMessages(prev => [...prev, { role: 'ai', text: '**Network Error:** Could not reach the backend.' }]);
-    } finally {
-      setIsLoading(false);
-    }
+      if(res.ok) setMessages(prev => [...prev, { role:'ai', text:data.answer, sources:data.sources||[] }]);
+      else setMessages(prev => [...prev, { role:'ai', text:`**Error:** ${data.detail||'Something went wrong.'}` }]);
+    } catch { setMessages(prev => [...prev, { role:'ai', text:'**Network Error:** Could not reach the backend.' }]); }
+    finally { setIsLoading(false); }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) handleSend(e);
-  };
-
-  const userQueries = messages.filter(m => m.role === 'user');
+  const handleKeyDown = (e) => { if(e.key==='Enter' && !e.shiftKey) handleSend(e); };
+  const userQueries = messages.filter(m => m.role==='user');
 
   return (
     <div className="app-container">
-
       {/* Sidebar */}
       <aside className="sidebar">
-
         <div className="brand">
           <div className="brand-icon"><LogoIcon /></div>
           <div className="brand-text">
@@ -228,25 +180,16 @@ function App() {
           </div>
         </div>
 
-        {/* Upload */}
+        {/* Upload Section */}
         <div className="sidebar-section">
           <span className="section-label">Knowledge Base</span>
-
-          <label className={`upload-area ${file ? 'has-file' : ''}`}>
-            <input
-              id="file-upload"
-              type="file"
-              accept=".pdf,.txt,.csv"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
+          <label className={`upload-area ${file?'has-file':''}`}>
+            <input id="file-upload" type="file" accept=".pdf,.txt,.csv" onChange={handleFileChange} style={{ display:'none' }} />
             {file ? (
               <div className="file-ready-state">
                 <div className="file-ready-icon"><DocumentIcon /></div>
                 <div className="file-name" title={file.name}>{file.name}</div>
-                <button className="remove-file-btn" onClick={removeFile} title="Remove">
-                  <TrashIcon />
-                </button>
+                <button className="remove-file-btn" onClick={removeFile} title="Remove"><TrashIcon /></button>
               </div>
             ) : (
               <>
@@ -256,28 +199,16 @@ function App() {
               </>
             )}
           </label>
-
-          <button
-            className={`upload-btn ${isUploading ? 'loading' : ''}`}
-            onClick={handleUpload}
-            disabled={!file || isUploading}
-          >
-            {isUploading
-              ? <><span className="btn-spinner" />Uploading…</>
-              : 'Add to Knowledge Base'}
+          <button className={`upload-btn ${isUploading?'loading':''}`} onClick={handleUpload} disabled={!file || isUploading}>
+            {isUploading ? <>Uploading…</> : 'Add to Knowledge Base'}
           </button>
+          {uploadStatus && <div className={`status-message status-${uploadStatus.type}`}>{uploadStatus.message}</div>}
 
-          {uploadStatus && (
-            <div className={`status-message status-${uploadStatus.type} animate-fade-in`}>
-              {uploadStatus.message}
-            </div>
-          )}
-
-          {/* Indexed files list */}
-          {uploadedFiles.length > 0 && (
+          {/* Indexed Files */}
+          {uploadedFiles.length>0 && (
             <div className="file-list">
               <span className="file-list-label">Indexed files</span>
-              {uploadedFiles.map(f => (
+              {uploadedFiles.map(f=>(
                 <div key={f.name} className="file-list-item">
                   <DocumentIcon />
                   <span className="file-list-name" title={f.name}>{f.name}</span>
@@ -288,86 +219,50 @@ function App() {
           )}
         </div>
 
-        {/* Query history */}
+        {/* Query History */}
         <div className="history-section">
           <span className="section-label">Recent Queries</span>
-          {userQueries.length === 0 ? (
-            <div className="empty-history">No queries yet.</div>
-          ) : (
-            <div className="history-scroll">
-              {userQueries.slice().reverse().map((msg, i) => (
-                <div key={i} className="history-item">
-                  <div className="history-query">{msg.text}</div>
-                </div>
-              ))}
-            </div>
-          )}
+          {userQueries.length===0 ? <div className="empty-history">No queries yet.</div> :
+            <div className="history-scroll">{userQueries.slice().reverse().map((msg,i)=><div key={i} className="history-item">{msg.text}</div>)}</div>}
         </div>
       </aside>
 
       {/* Chat */}
       <main className="chat-container">
-
         <div className="chat-header">
-          <div>
-            <div className="chat-title">Chat</div>
-            <div className="chat-subtitle">Ask questions about your documents</div>
-          </div>
-          <div className="status-indicator">
-            <span className="pulse-dot" />
-            Connected
-          </div>
+          <div><div className="chat-title">Chat</div><div className="chat-subtitle">Ask questions about your documents</div></div>
+          <div className="status-indicator"><span className="pulse-dot" />Connected</div>
         </div>
 
         <div className="messages-area">
-          {messages.length === 0 && !isLoading && (
+          {messages.length===0 && !isLoading && (
             <div className="empty-state">
               <div className="empty-icon"><LogoIcon /></div>
               <h2>How can I help you today?</h2>
-              <p>
-                Upload a document using the sidebar, wait for it to show <strong>Ready</strong>,
-                then ask any question. Luminara reads all relevant sections and gives you a detailed answer.
-              </p>
+              <p>Upload a document, wait for it to show <strong>Ready</strong>, then ask a question.</p>
             </div>
           )}
-
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`message-wrapper ${msg.role} animate-fade-in`}>
-              <div className={`avatar ${msg.role}`}>
-                {msg.role === 'user' ? <UserIcon /> : 'L'}
-              </div>
+          {messages.map((msg,idx)=>(
+            <div key={idx} className={`message-wrapper ${msg.role}`}>
+              <div className={`avatar ${msg.role}`}>{msg.role==='user'?<UserIcon />:'L'}</div>
               <div className={`message-content ${msg.role}`}>
-                {msg.role === 'user' ? (
-                  <div className="user-text">{msg.text}</div>
-                ) : (
+                {msg.role==='user' ? <div className="user-text">{msg.text}</div> :
                   <>
-                    <div className="ai-answer-header">
-                      <span className="ai-label">Luminara</span>
-                      <CopyButton text={msg.text} />
-                    </div>
-                    <div className="markdown-content">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
-                    </div>
-                  </>
-                )}
+                    <div className="ai-answer-header"><span className="ai-label">Luminara</span><CopyButton text={msg.text} /></div>
+                    <div className="markdown-content"><ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown></div>
+                  </>}
               </div>
             </div>
           ))}
-
           {isLoading && (
-            <div className="message-wrapper ai animate-fade-in">
+            <div className="message-wrapper ai">
               <div className="avatar ai">L</div>
               <div className="message-content ai typing-content">
-                <div className="typing-indicator">
-                  <div className="typing-dot" />
-                  <div className="typing-dot" />
-                  <div className="typing-dot" />
-                </div>
+                <div className="typing-indicator"><div className="typing-dot"/><div className="typing-dot"/><div className="typing-dot"/></div>
                 <div className="typing-text">Searching and analysing documents…</div>
               </div>
             </div>
           )}
-
           <div ref={messagesEndRef} />
         </div>
 
@@ -376,23 +271,15 @@ function App() {
             <textarea
               className="chat-input"
               value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
+              onChange={e=>setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask a question… (Enter to send, Shift+Enter for new line)"
-              disabled={isLoading}
-              rows={1}
-              autoFocus
+              disabled={isLoading} rows={1} autoFocus
             />
-            <button
-              type="submit"
-              className={`send-btn ${inputValue.trim() ? 'active' : ''}`}
-              disabled={!inputValue.trim() || isLoading}
-            >
-              <SendIcon />
-            </button>
+            <button type="submit" className={`send-btn ${inputValue.trim()?'active':''}`} disabled={!inputValue.trim() || isLoading}><SendIcon /></button>
           </form>
           <div className="input-footer">
-            Luminara bases its answers on the documents you provide. Always verify critical information. <br/>Powered by <strong>Devang</strong> ·  Built with <strong>LLaMA 3.3</strong> ·  RAG powered
+            Luminara bases its answers on your documents. Verify critical info. <br/>Powered by <strong>Devang</strong> · Built with <strong>LLaMA 3.3</strong> · RAG powered
           </div>
         </div>
       </main>
